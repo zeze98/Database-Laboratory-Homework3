@@ -4,39 +4,43 @@ import mysql.connector
 cnx = mysql.connector.connect(user='root', password='dgu1234!', host='127.0.0.1', database='baemin')
 
 
-def order_product():
+def user_registry():
+    i = 5
     cursor = cnx.cursor()
-    product = ("SELECT * FROM product")
-    cursor.execute(product)
     print('-----------------------------------------------')
-    print("주문 가능한 음식 리스트 입니다")
-    print("메뉴를 보시고 주문을 원하시는 제품의 번호를 입력해주세요")
-    print('-----------------------------------------------')
+    print('사용자의 성함을 입력해주세요')
+    userN = input()
+    print('배송받으실 배송지 주소를 입력해주세요')
+    userAd = input()
+    print('주문자 연락처를 입력해주세요')
+    print('"-"는 생략하고 입력해주세요')
+    userPn = int(input())
 
-    for food in cursor:
-        print(str(food[0]) + '번' + ' 제품명: ' + food[1] + ' 제품설명: ' + food[2] + ' 제품가격: ' + str(food[3]) + '원')
-
-    print('-----------------------------------------------')
-    print('주문제품 번호')
-    proN = int(input())
-    print('주문수량')
-    proQ = int(input())
-    print(str(proN) + '번 음식 ' + str(proQ) + '개 ' + '주문하시려는게 맞나요?')
     print('맞으시면 1번을 틀리시다면 2번을 입력해주세요')
     TF = int(input())
     if TF == 1:
-        print('감사합니다 주문 받은 음식점에서 정성을다해 조리해서 최대한 빠르게 배달해드리겠습니다:)')
+        userRe = ("insert into Consumer(Consumer_Number, Consumer_Name, Address, Phone_Number) value (%s, %s, %s, %s)")
+        cursor.execute(userRe, (i, userN, userAd, userPn))
+        cnx.commit()
+        i += 1
         main()
-        print()
-
     elif TF == 2:
-        order_product()
+        user_registry()
 
     else:
         print('잘못입력하신거 같습니다 다시입력해주세요')
-        TF = int(input())
+        user_registry()
 
     cursor.close()
+
+
+def show_user():
+    cursor = cnx.cursor()
+    cursor.execute("select * from consumer")
+    for con in cursor:
+        print(con)
+    main()
+
 
 
 def main():
@@ -45,8 +49,9 @@ def main():
     print('문제번호를 입력해 주세요')
     print("1. Select four queries from the SQL queries in HW2")
     print('2. Implement the following')
-    print('3. 주문하기')
-    print('4. end')
+    print('3. 주문자 정보 입력')
+    print('4. 전체 유저 확인')
+    print('5. end')
     PN = int(input())
     if PN == 1:
         print()
@@ -69,8 +74,10 @@ def main():
             print('잘못입력하신거 같습니다 다시입력해주세요')
             main()
     elif PN == 3:
-        order_product()
+        user_registry()
     elif PN == 4:
+        show_user()
+    elif PN == 5:
         print('Database Laboratory Homework 3 is end')
         print('Thank you')
     else:
